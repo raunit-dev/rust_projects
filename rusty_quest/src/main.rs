@@ -24,6 +24,7 @@ fn main() {
         "Hallway",
         "A long, dimly lit hallway stretches before you. Portraits line the walls."
     );
+    hallway.add_item("Welcome to Hallway");
     
     let mut library = Room::new(
         "Library",
@@ -35,6 +36,7 @@ fn main() {
         "Dungeon",
         "A cold, damp dungeon with chains on the walls. Something rattles in the darkness."
     );
+    dungeon.add_item("The dungeon");
     
     let mut kitchen = Room::new(
         "Kitchen",
