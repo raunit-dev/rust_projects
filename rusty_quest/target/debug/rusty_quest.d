@@ -1,1 +1,1 @@
-/home/raunit/rust_projects/rusty_quest/target/debug/rusty_quest: /home/raunit/rust_projects/rusty_quest/src/main.rs
+/home/raunit/rust_projects/rusty_quest/target/debug/rusty_quest: /home/raunit/rust_projects/rusty_quest/src/main.rs /home/raunit/rust_projects/rusty_quest/src/player.rs /home/raunit/rust_projects/rusty_quest/src/room.rs /home/raunit/rust_projects/rusty_quest/src/world.rs
