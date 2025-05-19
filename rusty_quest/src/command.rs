@@ -7,6 +7,8 @@ pub enum Command {
     Look,
     Inventory,
     Take(String),
+    Drop(String),
+    Use(String),
     Help,
     Quit,
     Unknown(String),
@@ -29,6 +31,22 @@ pub fn parse_command(input: &str) -> Command {
             let item = words.collect::<Vec<&str>>().join(" ");
             if item.is_empty() {
                 Command::Unknown("Take what?".to_string())
+            } else {
+                Command::Take(item)
+            }
+        },
+        Some("drop") => {
+            let item = words.collect::<Vec<&str>>().join(" ");
+            if item.is_empty() {
+                Command::Unknown("Drop what?".to_string())
+            } else {
+                Command::Take(item)
+            }
+        },
+        Some("use") => {
+            let item = words.collect::<Vec<&str>>().join(" ");
+            if item.is_empty() {
+                Command::Unknown("Use what?".to_string())
             } else {
                 Command::Take(item)
             }
@@ -72,7 +90,107 @@ pub fn process_command(command: Command, player: &mut Player, world: &World) -> 
             Ok(true)
         },
         Command::Take(item_name) => {
-            Err(format!("You can't take {} yet. Items will be implemented later.", item_name))
+            if let Some(room) = world.get_room_mut(&player.current_room) {
+                // Check if the item is in the room
+                if room.has_item(&item_name) {
+                    // Remove the item from the room and add it to player's inventory
+                    if let Some(item) = room.remove_item(&item_name) {
+                        player.add_to_inventory(&item);
+                        println!("You pick up the {}.", item_name);
+                        Ok(true)
+                    } else {
+                        // This should never happen due to the has_item check
+                        Err("Error taking item".to_string())
+                    }
+                } else {
+                    Err(format!("There is no {} here.", item_name))
+                }
+            } else {
+                Err("You're in a void. This is a bug.".to_string())
+            }
+        },Command::Drop(item_name) => {
+            // Check if the player has the item
+            if let Some(item_pos) = player.inventory.iter().position(|i| i == &item_name) {
+                // Remove it from inventory
+                let item = player.inventory.remove(item_pos);
+                
+                // Add it to the current room
+                if let Some(room) = world.get_room_mut(&player.current_room) {
+                    room.add_item(&item);
+                    println!("You drop the {}.", item);
+                    Ok(true)
+                } else {
+                    // If the room doesn't exist (shouldn't happen), put the item back
+                    player.add_to_inventory(&item);
+                    Err("You're in a void. This is a bug.".to_string())
+                }
+            } else {
+                Err(format!("You don't have a {}.", item_name))
+            }
+        },
+        Command::Use(item_name) => {
+            // Check if the player has the item
+            if player.has_item(&item_name) {
+                // Implement special effects based on the item
+                match item_name.as_str() {
+                    "key" => {
+                        if player.current_room == "Hallway" {
+                            println!("You use the key to unlock a secret door!");
+                            // This could trigger some game state change
+                            // For example, add a new exit to the room
+                            if let Some(room) = world.get_room_mut("Hallway") {
+                                room.add_exit("down", "Secret Room");
+                                
+                                // Create the secret room if it doesn't exist
+                                if !world.rooms.contains_key("Secret Room") {
+                                    let mut secret_room = crate::room::Room::new(
+                                        "Secret Room",
+                                        "A hidden chamber with ancient treasures!"
+                                    );
+                                    secret_room.add_exit("up", "Hallway");
+                                    secret_room.add_item("golden crown");
+                                    world.add_room(secret_room);
+                                }
+                                
+                                Ok(true)
+                            } else {
+                                Err("Room error".to_string())
+                            }
+                        } else {
+                            println!("There's nothing to unlock here with the key.");
+                            Ok(true)
+                        }
+                    },
+                    "lantern" => {
+                        println!("You light the lantern, providing better illumination.");
+                        // This could improve visibility or reveal hidden items
+                        if player.current_room == "Dungeon" {
+                            println!("In the improved light, you notice a hidden key on the floor!");
+                            if let Some(room) = world.get_room_mut("Dungeon") {
+                                // Only add the key if it's not already there
+                                if !room.has_item("rusty key") {
+                                    room.add_item("rusty key");
+                                }
+                            }
+                        }
+                        Ok(true)
+                    },
+                    "book" => {
+                        println!("You read the book and learn about the castle's history.");
+                        // This could provide hints
+                        if player.current_room == "Library" {
+                            println!("The book mentions a secret door in the hallway that can be opened with a key.");
+                        }
+                        Ok(true)
+                    },
+                    _ => {
+                        println!("You can't figure out how to use the {} effectively.", item_name);
+                        Ok(true)
+                    }
+                }
+            } else {
+                Err(format!("You don't have a {}.", item_name))
+            }
         },
         Command::Help => {
             print_help();
@@ -111,8 +229,10 @@ fn print_help() {
     println!("Available commands:");
     println!("  go <direction> - Move in the specified direction");
     println!("  look - Look around the current room");
-    println!("  inventory - Check what you're carrying");
-    println!("  take <item> - Pick up an item (not implemented yet)");
+    println!("  inventory (or i) - Check what you're carrying");
+    println!("  take <item> - Pick up an item");
+    println!("  drop <item> - Drop an item from your inventory");
+    println!("  use <item> - Use an item (special effects)");
     println!("  help - Display this help message");
     println!("  quit - Exit the game");
 }
