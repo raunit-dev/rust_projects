@@ -1,3 +1,22 @@
+trait Shape {
+    fn area(&self) -> f64; 
+    fn perimeter(&self) -> f64;
+}
+
+struct Square {
+   length: f64
+}
+
+impl Shape for Square {
+    fn area(&self) -> f64 {
+        return  self.length  * self.length;
+    }
+
+    fn perimeter(&self) -> f64 {
+        return 4.0 * self.length;
+    }
+}
+
 struct Rect {
     height: f32,
     width: f32
@@ -39,6 +58,10 @@ fn main () {
         height: 10.0
     };
 
+    let Square = Square {
+        length: 2.0
+    };
+
     let dir = DirectionType {
         direction: Direction::East
     };
@@ -69,5 +92,8 @@ fn main () {
     println!("{}, {}", r.width, r.height);
     println!("{}", r.area());
     println!("{}", r.perimeter());
+    println!("{}", Square.length);
+    println!("{}", Square.area());
+    println!("{}", Square.perimeter());
     Rect::print_something(10);
 }
