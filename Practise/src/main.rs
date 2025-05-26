@@ -1,36 +1,20 @@
-// trait Shape {
-//     fn area(&self) -> u32;
-// }
+use serde::{Deserialize};
+use serde_json;
 
-// struct Rect {
-//     height: u32,
-//     width: u32,
-// }
-
-// impl Shape for Rect {
-//     fn area(&self) -> u32 {
-//         return self.height*self.width
-//     }
-// }
-
-// fn main() {
-//     let rect = Rect { height: 10, width: 5 };
-//     println!("Hello World!");
-//     println!("Area: {}", get_area(rect));
-// }
-
-// fn get_area<T: Shape>(s: T) -> u32 {
-//     return s.area();
-// }
-
-
-#[derive(Debug)]
+#[derive(Deserialize)]
 struct User {
-    username: String
+    name: String,
+    password: String
 }
+
 fn main () {
-    let u = User {
-        username: String::from("harkirat")
-    };
-    println!("{:?}",u);
+    let s = String::from(r#"{"name":"raunit","password":"234"}"#);
+    let deserilization_string = serde_json::from_str::<User>(&s);
+    match deserilization_string {
+        Ok(user) => println!("Name: {}, Password: {}", user.name, user.password),
+        Err(e) => println!("{}",e)
+    }
 }
+
+//serde_json::from_str is a generic function that can deserialize JSON into any type that implements Deserialize.
+
