@@ -1,20 +1,26 @@
-use serde::{Deserialize};
-use serde_json;
+use std::vec;
 
-#[derive(Deserialize)]
-struct User {
+use borsh::{BorshDeserialize,BorshSerialize};
+
+#[derive(BorshDeserialize,BorshSerialize,Debug,PartialEq)]
+struct Developer {
+    id: u64,
     name: String,
-    password: String
+    gfs: Vec<u32>
 }
 
-fn main () {
-    let s = String::from(r#"{"name":"raunit","password":"234"}"#);
-    let deserilization_string = serde_json::from_str::<User>(&s);
-    match deserilization_string {
-        Ok(user) => println!("Name: {}, Password: {}", user.name, user.password),
-        Err(e) => println!("{}",e)
-    }
+fn main() {
+    let s = Developer {
+        id: 19,
+        name: "raunit".into(),
+        gfs: vec![0,0,0]
+    };
+
+    let mut buffer: Vec<u8> = Vec::new();
+    s.serialize(&mut buffer).unwrap();
+    println!("{:?}",buffer);
+    let deserialized = Developer::try_from_slice(&mut buffer).unwrap();
+
+    assert_eq!(s, deserialized);
+    println!("Successfully serialized and deserialized: {:?}", deserialized);
 }
-
-//serde_json::from_str is a generic function that can deserialize JSON into any type that implements Deserialize.
-
