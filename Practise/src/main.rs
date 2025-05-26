@@ -1,87 +1,36 @@
-use std::ops::Add;
-use std::ops::Mul;
-// fn main() {
-//     println!("{}", sum(1,2));
+// trait Shape {
+//     fn area(&self) -> u32;
 // }
 
-
-// fn sum<T: Add<Output = T>>(a: T,b: T) -> T {
-//     return a + b;
+// struct Rect {
+//     height: u32,
+//     width: u32,
 // }
 
-
-// trait Coding {
-//     fn code(&self);
-// }
-
-// struct Developer;
-// struct Designer;
-
-// impl Coding for Developer {
-//     fn code(&self) {
-//         println!("Developer is writing Rust Code");
+// impl Shape for Rect {
+//     fn area(&self) -> u32 {
+//         return self.height*self.width
 //     }
 // }
-// fn sign_up<T: Coding>(person: T) {
-//     println!("Signing up...");
-//     person.code();
-// }
 
 // fn main() {
-//     let dev = Developer;
-//     sign_up(dev);
-
-//     // let des = Designer;
-//     // sign_up(des);
+//     let rect = Rect { height: 10, width: 5 };
+//     println!("Hello World!");
+//     println!("Area: {}", get_area(rect));
 // }
 
-// use std::fmt::Display;
-
-// struct User {
-//     username: String
+// fn get_area<T: Shape>(s: T) -> u32 {
+//     return s.area();
 // }
 
-// fn main() {
-//     let u1 = User {
-//         username: String::from("raunit")
-//     };
- 
-//     let u2 = User {
-//         username: String::from("jaiswal")
-//     };
-//     display_elements(1,2);
-//     display_elements(String::from("Raunit"), String::from("Jaiswal"));
-//     display_elements(u1, u2);
-// }
 
-// fn display_elements<T: Display>(a: T, b: T) {
-//     println!("{}",a);
-//     println!("{}",b);
-// }
-
-use std::fmt::Display;
-
-
-
-struct Rect<T> {
-    width: T,
-    height: T,
+#[derive(Debug)]
+struct User {
+    username: String
 }
-
-impl<T: Mul<Output = T> + Copy> Rect<T> 
-// where
-//     T: Mul<Output = T> + Copy,
-{
-    fn area(&self) -> T {
-        self.width * self.height
-    }
-}
-
-fn main() {
-    let r = Rect {
-        width: 10,
-        height: 10,
+fn main () {
+    let u = User {
+        username: String::from("harkirat")
     };
-    
-    println!("{}", r.area());
+    println!("{:?}",u);
 }
